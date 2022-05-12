@@ -1,7 +1,8 @@
 using DevTrackR.API.Entities;
 using DevTrackR.API.Models;
-using DevTrackR.API.Persistance;
+using DevTrackR.API.Persistance.Repositories;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace DevTrackR.API.Controllers
 {
@@ -9,16 +10,16 @@ namespace DevTrackR.API.Controllers
   [Route("api/packages")]
   public class PackagesController : ControllerBase
   {
-    private readonly DevTrackRContext _context;
-    public PackagesController(DevTrackRContext context)
+    private readonly IPackageRepository _packageRepository;
+    public PackagesController(IPackageRepository packageRepository)
     {
-      _context = context;
+      _packageRepository = packageRepository;
     }
 
     [HttpGet]
     public IActionResult GetAll()
     {
-      var packages = _context.Packages;
+      var packages = _packageRepository.GetAll();
 
       return Ok(packages);
     }
@@ -26,7 +27,7 @@ namespace DevTrackR.API.Controllers
     [HttpGet("{code}")]
     public IActionResult GetByCode(string code)
     {
-      var package = _context.Packages.SingleOrDefault(p => p.Code == code);
+      var package = _packageRepository.GetByCode(code);
 
       if (package == null)
       {
@@ -46,7 +47,7 @@ namespace DevTrackR.API.Controllers
 
       var package = new Package(model.Title, model.Weight);
 
-      _context.Packages.Add(package);
+      _packageRepository.Add(package);
 
       return CreatedAtAction("GetByCode", new { code = package.Code }, package);
     }
@@ -54,7 +55,7 @@ namespace DevTrackR.API.Controllers
     [HttpPost("{code}/updates")]
     public IActionResult PostUpdate(string code, AddPackageUpdateInputModel model)
     {
-      var package = _context.Packages.SingleOrDefault(p => p.Code == code);
+      var package = _packageRepository.GetByCode(code);
 
       if (package == null)
       {
@@ -62,6 +63,7 @@ namespace DevTrackR.API.Controllers
       }
 
       package.AddUpdate(model.Status, model.Delivered);
+      _packageRepository.Update(package);
 
       return NoContent();
     }
