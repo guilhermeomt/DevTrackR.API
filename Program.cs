@@ -12,8 +12,10 @@ var sengGridApiKey = builder.Configuration.GetSection("SendGridApiKey").Value;
 
 // Add services to the container.
 builder.Services.AddSendGrid(o => o.ApiKey = sengGridApiKey);
+// builder.Services
+//        .AddDbContext<DevTrackRContext>(o => o.UseSqlServer(connectionString));
 builder.Services
-       .AddDbContext<DevTrackRContext>(o => o.UseSqlServer(connectionString));
+       .AddDbContext<DevTrackRContext>(o => o.UseInMemoryDatabase("DevTrackRDb"));
 builder.Services.AddScoped<IPackageRepository, PackageRepository>();
 
 builder.Services.AddControllers();
@@ -29,11 +31,8 @@ builder.Services.AddSwaggerGen(o =>
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-  app.UseSwagger();
-  app.UseSwaggerUI();
-}
+app.UseSwagger();
+app.UseSwaggerUI();
 
 app.UseHttpsRedirection();
 
