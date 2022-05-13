@@ -17,17 +17,17 @@ namespace DevTrackR.API.Controllers
     }
 
     [HttpGet]
-    public IActionResult GetAll()
+    public async Task<IActionResult> GetAll()
     {
-      var packages = _packageRepository.GetAll();
+      var packages = await _packageRepository.GetAll();
 
       return Ok(packages);
     }
 
     [HttpGet("{code}")]
-    public IActionResult GetByCode(string code)
+    public async Task<IActionResult> GetByCode(string code)
     {
-      var package = _packageRepository.GetByCode(code);
+      var package = await _packageRepository.GetByCode(code);
 
       if (package == null)
       {
@@ -38,7 +38,7 @@ namespace DevTrackR.API.Controllers
     }
 
     [HttpPost]
-    public IActionResult Post(AddPackageInputModel model)
+    public async Task<IActionResult> Post(AddPackageInputModel model)
     {
       if (model.Title.Length < 10)
       {
@@ -47,15 +47,15 @@ namespace DevTrackR.API.Controllers
 
       var package = new Package(model.Title, model.Weight);
 
-      _packageRepository.Add(package);
+      await _packageRepository.Add(package);
 
       return CreatedAtAction("GetByCode", new { code = package.Code }, package);
     }
 
     [HttpPost("{code}/updates")]
-    public IActionResult PostUpdate(string code, AddPackageUpdateInputModel model)
+    public async Task<IActionResult> PostUpdate(string code, AddPackageUpdateInputModel model)
     {
-      var package = _packageRepository.GetByCode(code);
+      var package = await _packageRepository.GetByCode(code);
 
       if (package == null)
       {
@@ -63,7 +63,7 @@ namespace DevTrackR.API.Controllers
       }
 
       package.AddUpdate(model.Status, model.Delivered);
-      _packageRepository.Update(package);
+      await _packageRepository.Update(package);
 
       return NoContent();
     }

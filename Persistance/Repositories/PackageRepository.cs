@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using DevTrackR.API.Entities;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,28 +10,28 @@ namespace DevTrackR.API.Persistance.Repositories
     {
       _context = context;
     }
-    public void Add(Package package)
+    public async Task Add(Package package)
     {
       _context.Packages.Add(package);
-      _context.SaveChanges();
+      await _context.SaveChangesAsync();
     }
 
-    public List<Package> GetAll()
+    public async Task<List<Package>> GetAll()
     {
-      return _context.Packages.ToList();
+      return await _context.Packages.ToListAsync();
     }
 
-    public Package GetByCode(string code)
+    public async Task<Package> GetByCode(string code)
     {
-      return _context.Packages
+      return await _context.Packages
                       .Include(p => p.Updates)
-                      .SingleOrDefault(p => p.Code == code);
+                      .SingleOrDefaultAsync(p => p.Code == code);
     }
 
-    public void Update(Package package)
+    public async Task Update(Package package)
     {
       _context.Entry(package).State = EntityState.Modified;
-      _context.SaveChanges();
+      await _context.SaveChangesAsync();
     }
   }
 }

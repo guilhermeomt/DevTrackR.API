@@ -5,9 +5,9 @@ namespace DevTrackR.API.Persistance.Repositories
 
   public interface IPackageRepository
   {
-    List<Package> GetAll();
-    Package GetByCode(string code);
-    void Add(Package package);
-    void Update(Package package);
+    Task<List<Package>> GetAll();
+    Task<Package> GetByCode(string code);
+    Task Add(Package package);
+    Task Update(Package package);
   }
 }
